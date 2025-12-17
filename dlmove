@@ -1,0 +1,205 @@
+import configparser
+import argparse
+from pathlib import Path
+import shutil
+import sys
+
+# Application version
+__version__ = "0.1.0"
+
+# Default config path: ~/.config/dlmove/config.txt
+DEFAULT_CONFIG_PATH = Path.home() / ".config" / "dlmove" / "config.txt"
+
+
+def load_config(path: Path) -> configparser.ConfigParser:
+    # Load configuration file
+    config = configparser.ConfigParser()
+
+    # If config path is not provided, use default location
+    if path is None:
+        path = DEFAULT_CONFIG_PATH
+
+    # Read config file
+    read_files = config.read(path, encoding="utf-8")
+
+    # Config file not found or unreadable
+    if not read_files:
+        print(f"[ERROR] Cannot read config file: {path}")
+        print("Make sure config exists, for example: ~/.config/dlmove/config.txt")
+        sys.exit(1)
+
+    # Ensure DEFAULT section exists
+    if "DEFAULT" not in config:
+        print("[ERROR] Config file must contain [DEFAULT] section")
+        sys.exit(1)
+
+    # Validate required DEFAULT keys
+    default = config["DEFAULT"]
+    if "downloads_dir" not in default or "base_target_dir" not in default:
+        print("[ERROR] [DEFAULT] must contain downloads_dir and base_target_dir")
+        sys.exit(1)
+
+    return config
+
+
+def build_rules(config: configparser.ConfigParser) -> dict:
+    # Build extension → folder mapping from config
+    rules = {}
+
+    for section in config.sections():
+        # Skip DEFAULT section
+        if section == "DEFAULT":
+            continue
+
+        # Convert section name to file extension (e.g. [pdf] -> .pdf)
+        ext = "." + section.lower()
+
+        folder = config[section].get("folder", "").strip()
+        subfolder = config[section].get("subfolder", "").strip()
+
+        # Folder is mandatory
+        if not folder:
+            print(f"[WARN] Section [{section}] has no 'folder', skipping")
+            continue
+
+        # Support optional subfolder
+        if subfolder:
+            rules[ext] = (folder, subfolder)
+        else:
+            rules[ext] = (folder,)
+
+    # No valid rules found
+    if not rules:
+        print("[ERROR] No valid rules found in config")
+        sys.exit(1)
+
+    return rules
+
+
+def organize(
+    downloads_dir: Path,
+    base_target_dir: Path,
+    rules: dict,
+    dry_run: bool = False
+) -> None:
+    # Ensure Downloads directory exists
+    if not downloads_dir.exists():
+        print(f"[ERROR] Downloads folder does not exist: {downloads_dir}")
+        sys.exit(1)
+
+    matched_count = 0
+    moved_count = 0
+
+    # Iterate over files in Downloads directory
+    for item in downloads_dir.iterdir():
+        # Skip directories
+        if not item.is_file():
+            continue
+
+        # Skip hidden files
+        if item.name.startswith("."):
+            continue
+
+        # Skip files that are still downloading
+        if item.suffix.lower() in {".part", ".crdownload"}:
+            continue
+
+        ext = item.suffix.lower()
+
+        # Skip files without matching rule
+        if ext not in rules:
+            continue
+
+        matched_count += 1
+
+        # Build target directory path
+        folder_chain = rules[ext]
+        target_dir = base_target_dir.joinpath(*folder_chain)
+
+        # Create target directories if they do not exist
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        target_path = target_dir / item.name
+
+        # Avoid overwriting existing files
+        if target_path.exists():
+            target_path = target_dir / f"{item.stem}_copy{ext}"
+
+        # Dry-run mode: only show what would happen
+        if dry_run:
+            print(f"[DRY-RUN] {item}  ->  {target_path}")
+        else:
+            print(f"[MOVE]    {item}  ->  {target_path}")
+            shutil.move(str(item), str(target_path))
+            moved_count += 1
+
+    # Final summary
+    if dry_run:
+        print(f"\n[DRY-RUN] Done. Files that WOULD be moved: {matched_count}")
+    else:
+        print(f"\n[DONE] Moved files: {moved_count}")
+
+
+def parse_args():
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(
+        prog="dlmove",
+        description="Sort files from Downloads into target folders using a config file"
+    )
+
+    # Optional custom config path
+    parser.add_argument(
+        "-c", "--config",
+        type=str,
+        help="Optional: custom config file path (default: ~/.config/dlmove/config.txt)"
+    )
+
+    # Version flag
+    parser.add_argument(
+        "-v", "--version",
+        action="version",
+        version=f"dlmove {__version__}"
+    )
+
+    # Exactly one action must be selected
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    group.add_argument(
+        "-dr", "--dry-run",
+        action="store_true",
+        help="Show what would be moved, but do not touch files"
+    )
+
+    group.add_argument(
+        "-s", "--start",
+        action="store_true",
+        help="Start moving files"
+    )
+
+    return parser.parse_args()
+
+
+def main():
+    # Entry point
+    args = parse_args()
+
+    # Load config file
+    config_path = Path(args.config).expanduser() if args.config else None
+    config = load_config(config_path)
+
+    default = config["DEFAULT"]
+    downloads_dir = Path(default["downloads_dir"]).expanduser()
+    base_target_dir = Path(default["base_target_dir"]).expanduser()
+
+    # Build sorting rules
+    rules = build_rules(config)
+
+    # Execute action
+    if args.dry_run:
+        organize(downloads_dir, base_target_dir, rules, dry_run=True)
+    else:
+        organize(downloads_dir, base_target_dir, rules, dry_run=False)
+
+
+if __name__ == "__main__":
+    main()

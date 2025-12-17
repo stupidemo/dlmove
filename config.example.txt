@@ -1,0 +1,82 @@
+[DEFAULT]
+downloads_dir = ~/Downloads
+base_target_dir = ~/TARGET_FOLDER
+
+# Change "TARGET_FOLDER" to any folder you want to have sorted files inside
+# This folder will be created automatically if it does not exist
+# Example:
+# base_target_dir = ~/Sorted
+
+
+
+# If folders/subfolders do not exist, they will be created automatically
+[pdf]
+folder = Documents
+subfolder = PDFandOTHERS
+
+[doc]
+folder = Documents
+subfolder = PDFandOTHERS
+
+[docx]
+folder = Documents
+subfolder = PDFandOTHERS
+
+[txt]
+folder = Documents
+subfolder = TXTs
+
+
+
+
+[png]
+folder = Pictures
+
+[jpeg]
+folder = Pictures
+
+[webp]
+folder = Pictures
+
+[jpg]
+folder = Pictures
+
+[gif]
+folder = Pictures
+subfolder = GIF
+
+[ico]
+folder = Pictures
+subfolder = Icons
+
+
+
+
+[mp3]
+folder = Music
+
+[wav]
+folder = Music
+
+[ogg]
+folder = Music
+
+
+
+
+[zip]
+folder = Archives
+
+[rar]
+folder = Archives
+
+[7z]
+folder = Archives
+
+
+
+[flatpakref]
+folder = Packages
+
+[deb]
+folder = Packages
