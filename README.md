@@ -56,19 +56,6 @@ dlmove -c / --config ~/path/to/config.yaml
 dlmove -v / --version
 ```
 
-## Auto-start on boot (Linux)
-
-```bash
-# copy the service file
-mkdir -p ~/.config/systemd/user
-cp dlmove.service ~/.config/systemd/user/
-
-# enable it
-systemctl --user daemon-reload
-systemctl --user enable dlmove.service
-systemctl --user start dlmove.service
-```
-
 ## Built with
 
 - [watchdog](https://github.com/gorakhargosh/watchdog) — filesystem monitoring
