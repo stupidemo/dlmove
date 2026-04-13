@@ -34,17 +34,6 @@ Then install dlmove:
 pipx install git+https://github.com/stupidemo/dlmove.git
 ```
 
-## Usage
-
-```bash
-dlmove                    # move files
-dlmove -h / --help
-dlmove -dr / --dry-run    # preview without moving anything
-dlmove -d / --daemon      # watch folder in background
-dlmove -c / --config ~/path/to/config.yaml
-dlmove -v / --version
-```
-
 ## Setup
 
 After installing, create the config file:
@@ -55,6 +44,17 @@ curl -o ~/.config/dlmove/config.yaml https://raw.githubusercontent.com/stupidemo
 ```
 
 Or manually copy `config.yaml` from this repo to `~/.config/dlmove/config.yaml` and edit it to match your folder structure.
+
+## Usage
+
+```bash
+dlmove                    # move files
+dlmove -h / --help
+dlmove -dr / --dry-run    # preview without moving anything
+dlmove -d / --daemon      # watch folder in background
+dlmove -c / --config ~/path/to/config.yaml
+dlmove -v / --version
+```
 
 ## Auto-start on boot (Linux)
 
