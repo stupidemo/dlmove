@@ -1,0 +1,91 @@
+# downloads_dir: where to pick files up from
+# destination_dir: the root folder where everything gets sorted into
+
+downloads_dir: "~/Downloads"
+destination_dir: "~/Sorted"
+
+# format: extension: [subfolder1, subfolder2, ...]
+# leave the list empty [] to drop the file straight into destination_dir
+# if an extension isn't listed here, the file won't be touched
+extensions:
+
+  # audio
+  mp3: ["Music"]
+  flac: ["Music"]
+  wav: ["Music"]
+  ogg: ["Music"]
+  m4a: ["Music"]
+
+  # video
+  mp4: ["Videos"]
+  mkv: ["Videos"]
+  avi: ["Videos"]
+  mov: ["Videos"]
+  webm: ["Videos"]
+  m4v: ["Videos"]
+
+  # images
+  png: ["Images"]
+  jpg: ["Images"]
+  jpeg: ["Images"]
+  gif: ["Images"]
+  webp: ["Images"]
+  svg: ["Images", "Vector"]
+  ico: ["Images", "Icons"]
+
+  # documents
+  pdf: ["Documents", "PDFs"]
+  doc: ["Documents", "Word"]
+  docx: ["Documents", "Word"]
+  odt: ["Documents", "Word"]
+
+  xls: ["Documents", "Excel"]
+  xlsx: ["Documents", "Excel"]
+
+  ppt: ["Documents", "Presentations"]
+  pptx: ["Documents", "Presentations"]
+
+  txt: ["Documents", "Text"]
+  md: ["Documents", "Markdown"]
+
+  # code
+  py: ["Code", "Python"]
+  js: ["Code", "JavaScript"]
+  ts: ["Code", "TypeScript"]
+  html: ["Code", "Web"]
+  css: ["Code", "Web"]
+  json: ["Code", "Data"]
+  yaml: ["Code", "Config"]
+  yml: ["Code", "Config"]
+  xml: ["Code", "Data"]
+  sh: ["Code", "Scripts"]
+  bash: ["Code", "Scripts"]
+
+  # archives
+  zip: ["Archives"]
+  7z: ["Archives"]
+  rar: ["Archives"]
+  tar: ["Archives"]
+  gz: ["Archives"]
+  bz2: ["Archives"]
+  xz: ["Archives"]
+
+  # linux packages
+  deb: ["Packages", "Debian"]
+  appimage: ["Packages", "AppImage"]
+  flatpak: ["Packages", "Flatpak"]
+
+  # games and mods
+  jar: ["Mods"]  # minecraft
+  exe: ["Programs"]
+
+  # fonts
+  ttf: ["Fonts"]
+  otf: ["Fonts"]
+
+  # torrents
+  torrent: ["Torrents"]
+
+  # misc
+  log: ["Other", "Logs"]
+  tmp: ["Other", "Temp"]
