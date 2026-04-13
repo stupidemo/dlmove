@@ -1,10 +1,32 @@
 # dlmove/watcher.py
 
+import os
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from dlmove.mover import move_files
 from pathlib import Path
+
+
+def wait_for_file(path: str, timeout: int = 10) -> bool:
+    # wait till file stops changing
+    size_before = -1
+    elapsed = 0
+
+    while elapsed < timeout:
+        try:
+            size_now = os.path.getsize(path)
+        except FileNotFoundError:
+            return False
+        
+        if size_now == size_before:
+            return True
+        
+        size_before = size_now
+        time.sleep(1)
+        elapsed += 1
+
+    return False
 
 
 class DownloadsHandler(FileSystemEventHandler):
@@ -13,12 +35,23 @@ class DownloadsHandler(FileSystemEventHandler):
     def __init__(self, config: dict) -> None:
         self.config = config
 
+
     def on_created(self, event) -> None:
         # ignore new folders, only handle files
         if event.is_directory:
             return
+
+        # ignore temporary downloading files
+        if event.src_path.endswith(".part") or event.src_path.endswith(".crdownload"):
+            return
+
+        print(f"\n  New file detected: {event.src_path}")
         
-        print(f"\nNew file: {event.src_path}")
+        # wait till file download completely
+        if not wait_for_file(event.src_path):
+            print(f"  Timeout: file never stabilized, skipping")
+            return
+        
         move_files(self.config)
 
 
@@ -47,3 +80,4 @@ def start_daemon(config: dict) -> None:
 
     # wait for the observer thread to fully finish before exiting
     observer.join()
+

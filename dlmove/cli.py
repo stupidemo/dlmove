@@ -22,7 +22,7 @@ def main() -> None:
     parser.add_argument(
         "-v", "--version",
         action="version",
-        version="dlmove 0.1.0"
+        version="dlmove 0.1.1"
     )
 
     # dry-run shows what would happen without actually moving anything
