@@ -21,21 +21,39 @@ instead of overwriting it.
 
 ## Install
 
+Make sure you have [pipx](https://pipx.pypa.io) installed:
+
 ```bash
-git clone https://github.com/stupidemo/dlmove
-cd dlmove
-pip install -e .
+sudo apt install pipx
+pipx ensurepath
+```
+
+Then install dlmove:
+
+```bash
+pipx install git+https://github.com/stupidemo/dlmove.git
+```
+
+## Usage
+
+```bash
+dlmove                  # move files
+dlmove --dry-run        # preview without moving anything
+dlmove --daemon         # watch folder in background
+dlmove --config ~/path/to/config.yaml
+dlmove --version
 ```
 
 ## Setup
 
-Copy the example config to the default location:
+After installing, create the config file:
+
 ```bash
 mkdir -p ~/.config/dlmove
-cp config.yaml ~/.config/dlmove/config.yaml
+curl -o ~/.config/dlmove/config.yaml https://raw.githubusercontent.com/stupidemo/dlmove/main/config.yaml
 ```
 
-Then edit it to match your folder structure.
+Or manually copy `config.yaml` from this repo to `~/.config/dlmove/config.yaml` and edit it to match your folder structure.
 
 ## Usage
 
