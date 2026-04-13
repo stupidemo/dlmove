@@ -42,12 +42,9 @@ def main() -> None:
     args = parser.parse_args()
     config=load_config(args.config)
 
-    if args.dry_run:
-        print("dry-run mode - files are not moving\n")
-
-    move_files(config, dry_run=args.dry_run)
-
     if args.daemon:
         start_daemon(config)
     else:
+        if args.dry_run:
+            print("dry-run mode - files are not moving\n")
         move_files(config, dry_run=args.dry_run)
